@@ -1,0 +1,36 @@
+use std::collections::HashMap;
+use std::hash::Hash; // Import the Hash trait
+
+// Define a trait for sorting a map by its keys
+trait SortByKey<K, V> {
+    fn sort_by_key(&mut self);
+}
+
+// Implement the SortByKey trait for the generic HashMap
+impl<K, V> SortByKey<K, V> for HashMap<K, V>
+where
+    K: Ord + Hash, // Add the Hash trait bound
+{
+    fn sort_by_key(&mut self) {
+        let mut pairs: Vec<_> = self.drain().collect();
+        pairs.sort_by(|(key1, _), (key2, _)| key1.cmp(key2));
+        for (key, value) in pairs {
+            self.insert(key, value);
+        }
+    }
+}
+
+fn main() {
+    let mut my_map: HashMap<i32, &str> = HashMap::new();
+    my_map.insert(3, "three");
+    my_map.insert(1, "one");
+    my_map.insert(2, "two");
+    my_map.insert(5, "five");
+    my_map.insert(4, "four");
+    
+    println!("Original Map: {:?}", my_map);
+    
+    my_map.sort_by_key();
+    
+    println!("Sorted Map: {:?}", my_map);
+}
